@@ -1,17 +1,284 @@
-= sinatra-tags
+= Sinatra::Tags
 
-Description goes here.
+A Sinatra Extension that provides easy creation of flexible HTML tags.
+
+== Why was this gem created ?
+
+To enable the Sinatra community to quickly and easily add this functionality to any 
+app / extension they wish to create. ie: preventing time waste or the 're-invention of the wheel'.
+
+
+
+== Installation
+  
+  #  Add RubyGems.org (former Gemcutter) to your RubyGems sources 
+  $  gem sources -a http://rubygems.org
+
+  $  (sudo)? gem install sinatra-tags
+
+== Dependencies
+
+This Gem depends upon the following:
+
+=== Runtime:
+
+* sinatra ( >= 1.0.a )
+* sinatra-outputbuffer[http://github.com/kematzy/sinatra-outputbuffer] (>= 0.1.0)
+
+Optionals:
+
+* sinatra-settings[http://github.com/kematzy/sinatra-settings] (>= 0.1.1) # to view default settings in a browser display.
+
+
+=== Development & Tests:
+
+* sinatra-tests (>= 0.1.6)
+* rspec (>= 1.3.0 )
+* rack-test (>= 0.5.3)
+* rspec_hpricot_matchers (>= 0.1.0)
+
+== Getting Started
+
+To start using Sinatra::Tags, just require and register the extension 
+
+...in your App...
+  
+  require 'sinatra/tags'
+  
+  class YourApp < Sinatra::Base
+    register(Sinatra::Tags)
+    
+    <snip...>
+    
+  end
+  
+...or your Extension...
+  
+  require 'sinatra/tags'
+  
+  module Sinatra
+    module YourExtension
+      
+      <snip...>
+      
+      def self.registered(app)
+        app.register Sinatra::Tags
+        <snip...>
+      end
+      
+    end
+  end
+
+
+== Usage
+
+Sinatra::Tags has only <b>one public method</b>, with this <b>dynamic</b> syntax:
+
+  tag(name)
+  tag(name, &block)
+  
+  tag(name, content)
+  tag(name, content, attributes)
+  tag(name, content, attributes, &block)
+  
+  tag(name, attributes)
+  tag(name, attributes, &block)
+  
+
+This dynamic syntax provides a very flexible method as you can see in the examples below:
+
+
+<b>Self closing tags:</b>
+
+  tag(:br)  # => 
+    
+    <br> or <br/> if XHTML
+
+  tag(:hr, :class => "space") # => 
+    
+    <hr class="space">
+
+<b>Multi line tags:</b>
+
+  tag(:div) # => 
+    
+    <div></div>
+
+  tag(:div, 'content') # => 
+    
+    <div>
+      content
+    </div>
+
+  tag(:div, 'content', :id => 'comment') # => 
+    
+    <div id="comment">
+      content
+    </div>
+    
+  # NB! no content
+  tag(:div, :id => 'comment') # => 
+    
+    <div id="comment"></div>
+    
+
+<b>Single line tags:</b>
+
+  tag(:h1,'Header') # => 
+    
+    <h1>Header</h1>
+
+  tag(:abbr, 'WHO', :title => "World Health Organization") # => 
+    
+    <abbr title="World Health Organization">WHO</abbr>
+
+
+<b>Working with blocks</b>
+
+  tag(:div) do
+    tag(:p, 'Hello World')
+  end
+  # => 
+  
+    <div>
+      <p>Hello World</p>
+    </div>
+    
+  <% tag(:ul) do %>
+    <li>item 1</li>
+    <%= tag(:li, 'item 2') %>
+    <li>item 3</li>
+  <% end %>
+  # => 
+    
+    <ul>
+      <li>item 1</li>
+      <li>item 2</li>
+      <li>item 3</li>
+    </ul>
+
+
+  # NB! ignored tag contents if given a block
+  <% tag(:div, 'ignored tag-content') do  %>
+    <%= tag(:label, 'Comments:', :for => :comments)  %>
+    <%= tag(:textarea,'textarea contents', :id => :comments)  %>
+  <% end  %>
+  # => 
+    
+    <div>
+      <label for="comments">Comments:</label>
+      <textarea id="comments">
+        textarea contents
+      </textarea>
+    </div>
+
+
+
+<b>Boolean attributes:</b>
+
+  tag(:input, :type => :checkbox, :checked => true)
+  # => 
+    
+    <input type="checkbox" checked="checked" />
+
+  
+  tag(:option, 'Sinatra', :value => "1" :selected => true)
+  # => 
+    
+    <option value="1">Sinatra</option>
+    
+  
+  tag(:option, 'PHP', :value => "0" :selected => false)
+  # => 
+    
+    <option value="0">PHP</option>
+
+
+That's more or less it. Try it out and you'll see what it can do for you.
+
+
+== Configuration Settings
+
+The default settings should help you get moving quickly, and are fairly common sense based.
+
+
+==== <tt>:tags_output_format_is_xhtml</tt>
+
+Sets the HTML output format, toggling between HTML vs XHTML.
+Default is: <tt>false</tt>
+
+I prefer to output in HTML 4.0.1 Strict, but you can easily switch to XHTML
+by setting the value in your App or Extension:
+
+  set :tags_output_format_is_xhtml, true
+  
+...or on the fly like this
+
+  YourApp.tags_output_format_is_xhtml = true / false
+  
+  self.class.tags_output_format_is_xhtml = true / false
+  
+  settings.tags_output_format_is_xhtml = true / false
+
+
+==== <tt>:tags_add_newlines_after_tags</tt>
+
+Sets the formatting of the HTML output, whether it should be more compact in nature 
+or slightly better layed out. 
+Default is: <tt>true</tt>
+
+
+== RTFM
+
+If the above is not clear enough, please check the Specs for a better understanding.
+
+
+== Errors / Bugs
+
+If something is not behaving intuitively, it is a bug, and should be reported.
+Report it here: http://github.com/kematzy/sinatra-tags/issues 
+
+
+== TODOs
+
+* Keep it up to date with any changes in Sinatra.
+
+* Decide on if it's worth it to do validity checks on all attributes passed to tags 
+  ie: reject attributes based upon what is allowed for the tag. 
+    
+    tag(:base, :href => 'url', :target => '_self', :id => 'is-ignored') 
+    # => 
+      
+      <base href="url", target="_self">
+
+* Decide on whether to add a number of convenience tags (methods), such as:
+  
+    - meta(name, contents) 
+    
+    - img(src, attrs)
+  
+
+* Any other improvements I or You can think of.
+
 
 == Note on Patches/Pull Requests
  
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
+* Add tests for it. This is important so I don't break it in a future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+  * (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright
 
-Copyright (c) 2010 kematzy. See LICENSE for details.
+Copyright (c) 2010 Kematzy
+
+Released under the MIT License.
+
+See LICENSE for further details.
+
+=== Code Inspirations:
+
+* The ActiveSupport gem by DHH & Rails Core Team
+
