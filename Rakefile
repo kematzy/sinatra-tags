@@ -5,12 +5,15 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "sinatra-tags"
-    gem.summary = %Q{A Sinatra Extension that provides easy to use flexible HTML tags.}
-    gem.description = %Q{A Sinatra Extension that provides easy to use flexible HTML tags.}
+    gem.summary = %Q{A Sinatra Extension that provides easy creation of flexible HTML tags.}
+    gem.description = %Q{A Sinatra Extension that provides easy creation of flexible HTML tags.}
     gem.email = "kematzy@gmail.com"
     gem.homepage = "http://github.com/kematzy/sinatra-tags"
     gem.authors = ["kematzy"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_dependency('sinatra', '>=1.0.a')
+    gem.add_dependency('sinatra-outputbuffer', '>=0.1.0')
+    gem.add_development_dependency "sinatra-tests", ">= 0.1.6"
+    gem.add_development_dependency "rspec", ">= 1.3.0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
