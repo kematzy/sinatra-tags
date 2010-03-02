@@ -550,8 +550,8 @@ module Sinatra
     
     ##
     # Registers these Extensions:
-    #   
-    #   * Sinatra::OutputBuffer
+    # 
+    # * Sinatra::OutputBuffer
     # 
     # Default Settings:
     # 
