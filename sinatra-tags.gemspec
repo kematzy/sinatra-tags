@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/sinatra/tags.rb",
+     "sinatra-tags.gemspec",
      "spec/sinatra/tags_spec.rb",
      "spec/spec_helper.rb"
   ]
