@@ -85,7 +85,7 @@ describe "Sinatra" do
             a address applet bdo big blockquote body button caption center 
             colgroup dd dir div dl dt fieldset form frameset head html iframe 
             map noframes noscript object ol optgroup pre script select small 
-            style table tbody td textarea tfoot th thead title tr tt ul 
+            style table tbody td tfoot th thead title tr tt ul 
           ).each do |t|
             
             describe "like <#{t}>" do 
@@ -125,6 +125,44 @@ describe "Sinatra" do
             end #/ like ##{t}
             
           end #/ loop
+          
+          describe "like <textarea>" do 
+            
+            it "should NOT have a '\\n' after the opening tag and before the closing tag" do 
+              erb_app "<%= tag(:textarea,'contents') %>"
+              body.should == "<textarea>contents</textarea>\n"
+              
+              haml_app "= tag(:textarea,'contents')"
+              body.should == "<textarea>contents</textarea>\n"
+            end
+            
+            it "should work without contents passed in" do 
+              erb_app "<%= tag(:textarea,nil) %>"
+              body.should == "<textarea></textarea>\n"
+              
+              haml_app "= tag(:textarea,nil)"
+              body.should == "<textarea></textarea>\n"
+            end
+            
+            it "should allow a hash of attributes to be passed" do 
+              erb_app "<%= tag(:textarea,'contents', :id => 'tag-id', :class => 'tag-class') %>"
+              body.should have_tag("textarea#tag-id.tag-class","contents")
+              
+              haml_app "= tag(:textarea,'contents', :id => 'tag-id', :class => 'tag-class')"
+              body.should have_tag("textarea#tag-id.tag-class","contents")
+            end
+            
+            it "with ':newline => false' should NOT add '\\n' around the contents" do 
+              erb_app "<%= tag(:textarea,'content', :id => 'tag-id', :newline => false) %>"
+              body.should == "<textarea id=\"tag-id\">content</textarea>\n"
+              
+              haml_app "= tag(:textarea,'content', :id => 'tag-id', :newline => false)"
+              body.should == "<textarea id=\"tag-id\">content</textarea>\n"
+            end
+            
+          end #/ like #textarea
+          
+          
           
         end #/ multi line tags
         
@@ -311,7 +349,7 @@ block = %Q[
             # body.should have_tag(:debug)
             body.should have_tag('div#comments')
             body.should have_tag('div#comments > fieldset > legend', 'Comments')
-            body.should have_tag('div#comments > fieldset > textarea#field-comments', "\ntest\n")
+            body.should have_tag('div#comments > fieldset > textarea#field-comments', "test")
             body.should have_tag('div#comments > fieldset > span', "Some description") 
             # 
             body.should have_tag('div#comments > fieldset#form-details')
@@ -338,7 +376,7 @@ block =  %Q[
             # body.should have_tag(:debug)
             body.should have_tag('div#comments')
             body.should have_tag('div#comments > fieldset > legend', 'Comments')
-            body.should have_tag('div#comments > fieldset > textarea#field-comments', "\ntest\n")
+            body.should have_tag('div#comments > fieldset > textarea#field-comments', "test")
             body.should have_tag('div#comments > fieldset > span', "Some description") 
             # 
             body.should have_tag('div#comments > fieldset#form-details')
@@ -369,7 +407,7 @@ block =  %Q[
             body.should have_tag('div#comments > p', 'Just plain HTML content')
             body.should have_tag('div#comments > fieldset > legend', 'Comments')
             body.should have_tag('div#comments > fieldset > p', 'Even more plain HTML content')
-            body.should have_tag('div#comments > fieldset > textarea#field-comments', "\ntest\n")
+            body.should have_tag('div#comments > fieldset > textarea#field-comments', "test")
             body.should have_tag('div#comments > fieldset > span', "Some description") 
             body.should have_tag('div#comments > p', 'Loads of plain HTML content')
             # 
@@ -399,7 +437,7 @@ block =  %Q[
             body.should have_tag('div#comments > p', 'Just plain HTML content')
             body.should have_tag('div#comments > fieldset > legend', 'Comments')
             body.should have_tag('div#comments > fieldset > p', 'Even more plain HTML content')
-            body.should have_tag('div#comments > fieldset > textarea#field-comments', "\ntest\n")
+            body.should have_tag('div#comments > fieldset > textarea#field-comments', "test")
             body.should have_tag('div#comments > fieldset > span', "Some description") 
             body.should have_tag('div#comments > p', 'Loads of plain HTML content')
             # 
@@ -419,7 +457,7 @@ block = %Q[
             erb_app block
             body.should_not have_tag('div', /tag-content/)
             body.should have_tag('label[@for=comments]', 'Comments:')
-            body.should have_tag('textarea[@id=comments]',"\nThis works\n")
+            body.should have_tag('textarea[@id=comments]',"This works")
 
 block = %Q[
 - tag(:div, 'tag-content') do 
@@ -429,7 +467,7 @@ block = %Q[
             haml_app block
             body.should_not have_tag('div', /tag-content/)
             body.should have_tag('label[@for=comments]', 'Comments:')
-            body.should have_tag('textarea[@id=comments]',"\nThis works\n")
+            body.should have_tag('textarea[@id=comments]',"This works")
           end
           
         end #/ with Blocks
