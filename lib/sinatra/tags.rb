@@ -260,7 +260,7 @@ module Sinatra
   # 
   module Tags
     
-    VERSION = '0.1.0' unless const_defined?(:VERSION)
+    VERSION = '0.1.1' unless const_defined?(:VERSION)
     
     ##
     # Returns the version string for this extension
