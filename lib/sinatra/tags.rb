@@ -1,5 +1,4 @@
 
-require 'sinatra/base'
 require 'sinatra/outputbuffer'
 
 # :stopdoc: 
@@ -286,7 +285,7 @@ module Sinatra
         a address applet bdo big blockquote body button caption center 
         colgroup dd dir div dl dt fieldset form frameset head html iframe 
         map noframes noscript object ol optgroup pre script select small 
-        style table tbody td textarea tfoot th thead title tr tt ul 
+        style table tbody td tfoot th thead title tr tt ul 
       )
       
       ##
